@@ -11,13 +11,6 @@
         app:allowDividerBelow="false">
 
         <CheckBoxPreference
-            android:key="location_fallback"
-            android:title="@string/config_location_fallback"
-            android:summary="@string/config_location_fallback_summary"
-            android:defaultValue="true"
-            app:iconSpaceReserved="false" />
-
-        <CheckBoxPreference
             android:key="permanent_alarm"
             android:title="@string/config_perm_alarm"
             android:summary="@string/config_perm_alarm_descr"

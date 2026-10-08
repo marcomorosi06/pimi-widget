@@ -71,11 +71,13 @@ class WidgetSettingsFragment : PreferenceFragmentCompat() {
         val versionField: LongPressPreference? = findPreference(KEY_VERSION_FIELD)
         val sourceCodeField: Preference? = findPreference(KEY_SOURCE_CODE)
         val widgetStyleList: ListPreference? = findPreference(KEY_WIDGET_STYLE_LIST)
+        val fixedLocationField: Preference? = findPreference(KEY_FIXED_LOCATION)
 
         var debugCount = 0
 
+        // The weather needs a place: without one it cannot stay on.
         if (weatherSwitch?.isChecked == true &&
-            isDenied(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+            PreferencesHelper.getFixedLocation(context) == null
         ) {
             deleteWeatherData(context)
             weatherSwitch.isChecked = false
@@ -159,6 +161,11 @@ class WidgetSettingsFragment : PreferenceFragmentCompat() {
             }
             true
         }
+        updateFixedLocationSummary(context)
+        fixedLocationField?.setOnPreferenceClickListener {
+            showFixedLocationDialog(context)
+            true
+        }
         handleWeatherAppPreference(context)
     }
 
@@ -183,29 +190,9 @@ class WidgetSettingsFragment : PreferenceFragmentCompat() {
 
             return true
         }
-        if (isDenied(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            askForPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                getString(R.string.config_loc_perm_alert_title),
-                getString(R.string.config_loc_perm_alert_message)
-            ) {
-                weatherSwitchCallback(context, true)
-            }
-            return false
-        }
-        if (isDenied(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-            askForPermission(
-                context,
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-                getString(R.string.config_bg_perm_alert_title),
-                getString(
-                    R.string.config_bg_perm_alert_message,
-                    context.packageManager.backgroundPermissionOptionLabel
-                )
-            ) {
-                weatherSwitchCallback(context, true)
-            }
+        // The weather needs a place: ask for it first, then turn the weather on.
+        if (PreferencesHelper.getFixedLocation(context) == null) {
+            showFixedLocationDialog(context) { weatherSwitchCallback(context, true) }
             return false
         }
         WorkManagerHelper.enqueueOneTimeWork(
@@ -216,6 +203,44 @@ class WidgetSettingsFragment : PreferenceFragmentCompat() {
         weatherSwitch?.isChecked = true
 
         return true
+    }
+
+    private fun updateFixedLocationSummary(context: Context) {
+        val fixedLocation = PreferencesHelper.getFixedLocation(context)
+        findPreference<Preference>(KEY_FIXED_LOCATION)?.summary =
+            if (fixedLocation != null) {
+                getString(R.string.config_fixed_location_summary_fixed, fixedLocation.place)
+            } else {
+                getString(R.string.config_fixed_location_search_hint)
+            }
+    }
+
+    private fun showFixedLocationDialog(context: Context, onDone: (() -> Unit)? = null) {
+        FixedLocationDialog(
+            context = context,
+            scope = lifecycleScope,
+            current = PreferencesHelper.getFixedLocation(context),
+            onSelected = { lat, long, place ->
+                PreferencesHelper.setFixedLocation(context, lat, long, place)
+                onLocationSourceChanged(context)
+                onDone?.invoke()
+            }
+        ).show()
+    }
+
+    private fun onLocationSourceChanged(context: Context) {
+        updateFixedLocationSummary(context)
+
+        val weatherSwitch: SwitchPreferenceCompat? = findPreference(KEY_WEATHER_SWITCH)
+        if (weatherSwitch?.isChecked != true) return
+
+        lifecycleScope.launch {
+            // Drop the data of the previous place so the widget never shows it for the new one.
+            DataRepository.deleteLocationData(context)
+            DataRepository.deleteWeatherData(context)
+            // Fetch the weather for the new place right away.
+            weatherSwitchCallback(context, true)
+        }
     }
 
     private fun birthdaySwitchCallback(context: Context, isChecked: Boolean): Boolean {

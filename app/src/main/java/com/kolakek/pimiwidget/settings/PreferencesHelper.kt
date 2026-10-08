@@ -23,6 +23,9 @@ import android.content.Context
 import androidx.core.content.edit
 import androidx.core.text.util.LocalePreferences
 import androidx.preference.PreferenceManager
+import com.kolakek.pimiwidget.location.FIXED_LOCATION_NAME
+import com.kolakek.pimiwidget.location.LocationData
+import com.kolakek.pimiwidget.location.LocationFormat
 import com.kolakek.pimiwidget.utility.WeatherApp
 
 object PreferencesHelper {
@@ -127,7 +130,6 @@ object PreferencesHelper {
             showAlarms = getAlarmPreference(context),
             showWeather = getWeatherPreference(context),
             showBirthdays = getBirthdayPreference(context),
-            useLocationFallback = getLocationFallbackPreference(context),
             showDailyForecast = getDailyForecastPreference(context),
             showWeatherWarning = getWeatherWarningPreference(context),
             permanentAlarm = getPermanentAlarmPreference(context),
@@ -137,8 +139,40 @@ object PreferencesHelper {
             iconColor = iconColor,
             textColor = textColor,
             auxDisplay = auxDisplay,
-            weatherApp = weatherApp
+            weatherApp = weatherApp,
+            fixedLocation = getFixedLocation(context)
         )
+    }
+
+    /**
+     * Returns the location chosen by the user, or null when none is set.
+     * The returned time is the time of the call, as a fixed location does not age.
+     */
+    fun getFixedLocation(context: Context): LocationData? {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val lat = prefs.getString(KEY_FIXED_LOCATION_LAT, null)?.toDoubleOrNull()
+        val long = prefs.getString(KEY_FIXED_LOCATION_LONG, null)?.toDoubleOrNull()
+        if (lat == null || long == null) return null
+
+        val place = prefs.getString(KEY_FIXED_LOCATION_NAME, null)
+            ?.takeIf { it.isNotBlank() }
+            ?: LocationFormat.coordinatesLabel(lat, long)
+
+        return LocationData(
+            timeMillis = System.currentTimeMillis(),
+            lat = lat,
+            long = long,
+            place = place,
+            locationType = FIXED_LOCATION_NAME
+        )
+    }
+
+    fun setFixedLocation(context: Context, lat: Double, long: Double, place: String) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit {
+            putString(KEY_FIXED_LOCATION_LAT, lat.toString())
+            putString(KEY_FIXED_LOCATION_LONG, long.toString())
+            putString(KEY_FIXED_LOCATION_NAME, place)
+        }
     }
 
     fun setWeatherPreference(context: Context, value: Boolean) {
@@ -174,12 +208,6 @@ object PreferencesHelper {
     fun setAuxDisplayPreference(context: Context, pref: AuxDisplayPref) {
         PreferenceManager.getDefaultSharedPreferences(context).edit {
             putString(KEY_AUX_DISPLAY_LIST, pref.key)
-        }
-    }
-
-    fun setLocationFallbackPreference(context: Context, pref: Boolean) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit {
-            putBoolean(KEY_LOCATION_FALLBACK, pref)
         }
     }
 
@@ -249,11 +277,6 @@ object PreferencesHelper {
         val key = PreferenceManager.getDefaultSharedPreferences(context)
             .getString(KEY_AUX_DISPLAY_LIST, null)
         return AuxDisplayPref.entries.find { it.key == key } ?: AuxDisplayPref.PLACE_CONDITION
-    }
-
-    private fun getLocationFallbackPreference(context: Context): Boolean {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-            .getBoolean(KEY_LOCATION_FALLBACK, true)
     }
 
     private fun getPermanentAlarmPreference(context: Context): Boolean {

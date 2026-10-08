@@ -17,9 +17,7 @@
 
 package com.kolakek.pimiwidget.worker
 
-import android.Manifest
 import android.content.Context
-import androidx.annotation.RequiresPermission
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.CancellationException
@@ -31,7 +29,6 @@ class PimiWorker(
     workerParams: WorkerParameters,
 ) : CoroutineWorker(appContext, workerParams) {
 
-    @RequiresPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     override suspend fun doWork(): Result {
         return try {
             PimiUpdater.logUpdateStatus(

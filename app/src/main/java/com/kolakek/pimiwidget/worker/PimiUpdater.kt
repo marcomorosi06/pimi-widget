@@ -17,15 +17,13 @@
 
 package com.kolakek.pimiwidget.worker
 
-import android.Manifest
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import androidx.annotation.RequiresPermission
 import com.kolakek.pimiwidget.birthday.BirthdayData
 import com.kolakek.pimiwidget.birthday.BirthdayService
 import com.kolakek.pimiwidget.data.DataRepository
-import com.kolakek.pimiwidget.location.LocationService
+import com.kolakek.pimiwidget.exception.LocationUnavailableException
 import com.kolakek.pimiwidget.settings.PreferencesHelper
 import com.kolakek.pimiwidget.settings.WidgetPreferences
 import com.kolakek.pimiwidget.weather.WeatherData
@@ -35,7 +33,6 @@ import com.kolakek.pimiwidget.widget.WidgetUpdater
 
 object PimiUpdater {
 
-    @RequiresPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     suspend fun update(
         context: Context,
         updateAction: UpdateAction,
@@ -75,7 +72,6 @@ object PimiUpdater {
         if (prefs.showBirthdays) BirthdayService.fetchBirthdays(context)
     }
 
-    @RequiresPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     private suspend fun handleWeather(
         context: Context,
         prefs: WidgetPreferences,
@@ -105,12 +101,14 @@ object PimiUpdater {
         }
     }
 
-    @RequiresPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
     private suspend fun fetchWeather(
         context: Context,
         prefs: WidgetPreferences
     ): WeatherData {
-        val locationData = LocationService.fetchLocation(context, prefs.useLocationFallback)
+        // The weather is fetched only for the place chosen by the user.
+        val locationData = prefs.fixedLocation
+            ?: throw LocationUnavailableException("No weather location set")
+        DataRepository.storeLocationData(context, locationData)
         return WeatherService.fetchWeather(context, locationData)
     }
 

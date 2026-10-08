@@ -1,28 +1,8 @@
-/*
- * This file is part of Pimi Widget.
- *
- * Pimi Widget is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.kolakek.pimiwidget.location
 
-import android.location.LocationManager
-
-internal const val LOCATION_PROVIDER = LocationManager.FUSED_PROVIDER
-internal const val LOCATION_MAX_AGE_MILLIS = 60 * 60 * 1000L
-internal const val LOCATION_TIMEOUT_MILLIS = 30 * 1000L
-internal const val LOCATION_NAME_TIMEOUT_MILLIS = 5 * 1000L
-internal const val FRESH_LOCATION_NAME = "FreshLocation"
-internal const val CACHED_LOCATION_NAME = "CachedLocation"
-internal const val STORED_LOCATION_NAME = "StoredLocation"
+internal const val FIXED_LOCATION_NAME = "FixedLocation"
+internal const val GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
+internal const val GEOCODING_RESULT_COUNT = 10
+internal const val GEOCODING_MIN_QUERY_LENGTH = 2
+internal const val MAX_LATITUDE = 90.0
+internal const val MAX_LONGITUDE = 180.0

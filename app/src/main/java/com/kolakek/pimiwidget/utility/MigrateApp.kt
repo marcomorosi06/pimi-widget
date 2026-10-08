@@ -52,10 +52,6 @@ object MigrateApp {
                 context,
                 PreferencesHelper.AuxDisplayPref.NOTHING
             )
-            PreferencesHelper.setLocationFallbackPreference(
-                context,
-                true
-            )
         }
         if (previousVersionCode < 23) {
             val widgetStyleSolid = PreferencesHelper.WidgetStylePref.SOLID

@@ -17,8 +17,8 @@
 
 package com.kolakek.pimiwidget.settings
 
-internal const val SOURCE_CODE_URL = "https://github.com/kolakek/pimi-widget"
-internal const val ISSUE_TRACKER_URL = "https://github.com/kolakek/pimi-widget/issues"
+internal const val SOURCE_CODE_URL = "https://github.com/marcomorosi06/pimi-widget"
+internal const val ISSUE_TRACKER_URL = "https://github.com/marcomorosi06/pimi-widget/issues"
 internal const val LOCATION_URL = "https://www.openstreetmap.org"
 internal const val LOCATION_URL_ZOOM = 13
 
@@ -55,10 +55,14 @@ internal const val KEY_DISPLAY_PLACE_CONDITION = "aux_view_place_condition"
 internal const val KEY_BIRTHDAY_SWITCH = "birthday_switch"
 internal const val KEY_ALARM_SWITCH = "alarm_switch"
 internal const val KEY_WEATHER_SWITCH = "weather_switch"
-internal const val KEY_LOCATION_FALLBACK = "location_fallback"
 internal const val KEY_DAILY_FORECAST = "daily_forecast"
 internal const val KEY_WEATHER_WARNING = "weather_warnings"
 internal const val KEY_PERMANENT_ALARM = "permanent_alarm"
+
+internal const val KEY_FIXED_LOCATION = "fixed_location"
+internal const val KEY_FIXED_LOCATION_LAT = "fixed_location_lat"
+internal const val KEY_FIXED_LOCATION_LONG = "fixed_location_long"
+internal const val KEY_FIXED_LOCATION_NAME = "fixed_location_name"
 
 internal const val KEY_VERSION_FIELD = "build_number"
 internal const val KEY_SOURCE_CODE = "source_code"

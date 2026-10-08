@@ -33,7 +33,7 @@ All download options provide the same APK file, signed with the same signing key
 
 ### Privacy Information
 
-The widget collects your location approximately every 90 minutes. Your location data (latitude and longitude), along with your IP address, is shared with the weather provider ([Open-Meteo](https://open-meteo.com/)) to retrieve updated weather information. Only coarse location access is required; fine location access is optional. The last valid location information is stored on your device. You can view the data exchanged with the weather provider by long-pressing the **Build number** in the widget settings.
+This personal build has no location permission at all: it never reads your device location. The weather is fetched for one place that you choose in the widget settings. About every 90 minutes the coordinates of that place, along with your IP address, are shared with the weather provider ([Open-Meteo](https://open-meteo.com/)) to retrieve updated weather information. The chosen place is stored on your device and is excluded from backups (app backup is disabled). When you search for a place by name, the text you type and your system language are sent to the Open-Meteo geocoding API; nothing is sent while you are not searching. You can view the data exchanged with the weather provider by long-pressing the **Build number** in the widget settings.
 
 ### Usage
 
@@ -47,11 +47,11 @@ The widget uses the temperature unit from your Android system settings by defaul
 
 ### Weather Display
 
-The widget displays the forecast for the next 15 minutes as the current weather. It refreshes every 30 minutes. Forecast data for the next 6 hours is downloaded every 90 minutes, allowing the widget to show accurate weather for up to 6 hours without an internet connection. If the widget cannot update your location or retrieve new weather data for more than 6 hours (e.g., while in airplane mode), it will disable the weather display until both location and internet access are available again. If the internet is unavailable for an extended period, the widget may take some minutes to sync and display weather data.
+The widget displays the forecast for the next 15 minutes as the current weather. It refreshes every 30 minutes. Forecast data for the next 6 hours is downloaded every 90 minutes, allowing the widget to show accurate weather for up to 6 hours without an internet connection. If the widget cannot retrieve new weather data for more than 6 hours (e.g., while in airplane mode), it will disable the weather display until internet access is available again. If the internet is unavailable for an extended period, the widget may take some minutes to sync and display weather data.
 
-### Location Access
+### Weather Location
 
-In most cases, coarse location access is sufficient. For this to work, network-based location services must be enabled in your system settings (sometimes labeled as "Location Accuracy"). If only GPS-based location is available, fine location access must be granted to the widget.
+The widget does not use your device location. Turn on **Weather** in the widget settings (or tap **Weather location**) and either search for a place by name or enter its latitude and longitude. The weather of that place is shown until you choose another one. Place names come from the Open-Meteo geocoding API, which is based on [GeoNames](https://www.geonames.org/).
 
 ### Weather and Calendar Apps
 
@@ -93,7 +93,7 @@ You can find debug information by long-pressing the **Build number** in the widg
 
 - **NetworkUnavailable:** The widget was unable to fetch new weather data because the internet was unavailable. It will continue updating using the available forecast data until the internet becomes available again.
 
-- **LocationUnavailableException:** The widget could not retrieve your location. A new attempt is scheduled. Please ensure that location services are enabled on your device. See the Location Access section above.
+- **LocationUnavailableException:** No weather location is set. Choose one in the widget settings. See the Weather Location section above.
 
 - **Other exceptions:** Most exceptions are likely related to network issues. The widget will continue updating using the available forecast data until the internet becomes available again.
 

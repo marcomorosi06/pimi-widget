@@ -17,13 +17,13 @@
 
 package com.kolakek.pimiwidget.settings
 
+import com.kolakek.pimiwidget.location.LocationData
 import com.kolakek.pimiwidget.utility.WeatherApp
 
 data class WidgetPreferences (
     val showAlarms: Boolean,
     val showWeather: Boolean,
     val showBirthdays: Boolean,
-    val useLocationFallback: Boolean,
     val showDailyForecast: Boolean,
     val showWeatherWarning: Boolean,
     val permanentAlarm: Boolean,
@@ -33,5 +33,7 @@ data class WidgetPreferences (
     val iconColor: IconColor,
     val tempUnit: TempUnit,
     val auxDisplay: AuxDisplay,
-    val weatherApp: WeatherApp
+    val weatherApp: WeatherApp,
+    // Null means no weather location is set.
+    val fixedLocation: LocationData? = null
 )
